@@ -34,4 +34,7 @@ public class AsignacionServicio
 
     // Conductor asignado (podría ser nulo inicialmente)
     public int? ConductorId { get; set; }
+
+    // Propiedad de navegación hacia el historial
+    public ICollection<HistorialEstado> HistorialEstados { get; set; } = new List<HistorialEstado>();
 }

@@ -46,4 +46,21 @@ public class AsignacionesController : ControllerBase
         var mensaje = respuesta.Aceptar ? "Servicio aceptado y actualizado a estado 'EnProceso'." : "Servicio rechazado.";
         return Ok(new { message = mensaje });
     }
+
+    /// <summary>
+    /// Actualiza el estado de un servicio y guarda en el historial (TASK-027, TASK-028, TASK-029, TASK-030, TASK-031)
+    /// </summary>
+    [HttpPatch("{id}/estado")]
+    public async Task<ActionResult<CambioEstadoResponseDto>> ActualizarEstado(int id, [FromBody] CambioEstadoRequestDto request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var response = await _asignacionService.ActualizarEstadoAsync(id, request);
+
+        if (response == null)
+            return NotFound(new { message = $"No se encontró la asignación de servicio con ID {id}" });
+
+        return Ok(response);
+    }
 }
