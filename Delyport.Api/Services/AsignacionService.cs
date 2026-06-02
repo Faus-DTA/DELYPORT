@@ -1,5 +1,6 @@
 using Delyport.Api.Data;
 using Delyport.Api.Models.DTOs;
+using Delyport.Api.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Delyport.Api.Services;
@@ -62,5 +63,54 @@ public class AsignacionService : IAsignacionService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<CambioEstadoResponseDto?> ActualizarEstadoAsync(int id, CambioEstadoRequestDto request)
+    {
+        var servicio = await _context.AsignacionesServicio.FindAsync(id);
+
+        if (servicio == null)
+            return null;
+
+        // Regla de negocio: No se puede cambiar al mismo estado
+        if (servicio.Estado == request.EstadoNuevo)
+        {
+            return new CambioEstadoResponseDto
+            {
+                IdServicio = servicio.Id,
+                EstadoActual = servicio.Estado,
+                FechaActualizacion = DateTime.UtcNow,
+                Mensaje = "El servicio ya se encuentra en el estado solicitado."
+            };
+        }
+
+        var estadoAnterior = servicio.Estado;
+
+        // 1. Modificar el registro del servicio principal en la BD con el nuevo estado (TASK-030)
+        servicio.Estado = request.EstadoNuevo;
+
+        // 2. Crear el registro en el historial (TASK-029)
+        var historial = new HistorialEstado
+        {
+            AsignacionServicioId = servicio.Id,
+            EstadoAnterior = estadoAnterior,
+            EstadoNuevo = request.EstadoNuevo,
+            Observacion = request.Observacion,
+            FechaCambio = DateTime.UtcNow
+        };
+
+        _context.HistorialEstados.Add(historial);
+        _context.AsignacionesServicio.Update(servicio);
+        
+        await _context.SaveChangesAsync();
+
+        // 3. Retornar DTO de salida optimizado (TASK-031)
+        return new CambioEstadoResponseDto
+        {
+            IdServicio = servicio.Id,
+            EstadoActual = servicio.Estado,
+            FechaActualizacion = DateTime.UtcNow,
+            Mensaje = "Estado actualizado y registrado en el historial correctamente."
+        };
     }
 }

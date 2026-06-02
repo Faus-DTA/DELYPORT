@@ -10,6 +10,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<AsignacionServicio> AsignacionesServicio { get; set; }
+    public DbSet<HistorialEstado> HistorialEstados { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
