@@ -34,6 +34,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseDefaultFiles(); // <-- Para que sirva el index.html automáticamente
+app.UseStaticFiles();  // <-- Para los CSS y JS
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

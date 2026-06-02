@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delyport | Sistema de Gestión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>📦 Delyport</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" onclick="switchTab('solicitudes', this)">📝 Solicitudes</li>
+                    <li onclick="switchTab('servicios', this)">🚚 Servicios Asignados</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar...">
+                </div>
+                <div class="user-profile">
+                    <span>Fausto (Admin)</span>
+                    <div class="avatar">F</div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <!-- Pestaña Solicitudes (HU-002) -->
+                <section id="tab-solicitudes" class="tab-content active">
+                    <div class="section-header">
+                        <h1>Gestión de Solicitudes</h1>
+                        <p>Modifica las solicitudes que aún se encuentran en estado 'Registrado'.</p>
+                    </div>
+
+                    <div class="card glass-panel">
+                        <h3>Solicitudes Registradas</h3>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Detalle</th>
+                                        <th>Peso (Kg)</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="solicitudes-tbody">
+                                    <!-- Datos inyectados por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestaña Servicios (HU-005, HU-006) -->
+                <section id="tab-servicios" class="tab-content">
+                    <div class="section-header">
+                        <h1>Servicios Asignados</h1>
+                        <p>Responde a la asignación o actualiza el estado de tu servicio.</p>
+                    </div>
+
+                    <div class="cards-grid">
+                        <div class="card glass-panel flex-card">
+                            <div class="card-info">
+                                <span class="badge badge-pending" id="srv-estado">Pendiente</span>
+                                <h3 id="srv-codigo">Cargando...</h3>
+                                <p class="description" id="srv-desc">Obteniendo detalles del servicio asignado...</p>
+                                <div class="route-info">
+                                    <p><strong>Origen:</strong> <span id="srv-origen">-</span></p>
+                                    <p><strong>Destino:</strong> <span id="srv-destino">-</span></p>
+                                    <p><strong>Tarifa:</strong> $<span id="srv-tarifa">-</span></p>
+                                </div>
+                            </div>
+                            <div class="card-actions" id="srv-actions">
+                                <!-- Botones inyectados por JS según el estado -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Editar Solicitud -->
+    <div id="modal-editar" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Editar Solicitud</h2>
+            <form id="form-editar">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="edit-cliente" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Detalle de Carga</label>
+                    <textarea id="edit-detalle" required maxlength="500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Peso (Kg)</label>
+                    <input type="number" id="edit-peso" step="0.1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificación emergente (Toast) -->
+    <div id="toast" class="toast">Notificación</div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
