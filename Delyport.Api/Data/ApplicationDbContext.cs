@@ -48,13 +48,19 @@ public class ApplicationDbContext : DbContext
             new Solicitud
             {
                 Id = 1, Codigo = "SOL-100", Cliente = "Importaciones XYZ",
-                DetalleCarga = "10 Cajas de Teclados Mecánicos", PesoKg = 150.5m,
+                DetalleCarga = "10 Cajas de Teclados Mecánicos", 
+                Direccion = "Av. Los Fresnos 123", Distrito = "Santa Anita",
+                Tamano = Models.Enums.TamanoProducto.Mediano, CantidadProductos = 10,
+                PrecioTotal = (10 * 6) + 40, // 100
                 Estado = Models.Enums.EstadoSolicitud.Registrado, FechaCreacion = DateTime.UtcNow
             },
             new Solicitud
             {
                 Id = 2, Codigo = "SOL-101", Cliente = "Comercial Alfa",
-                DetalleCarga = "Repuestos de maquinaria agrícola", PesoKg = 850.0m,
+                DetalleCarga = "Repuestos de maquinaria", 
+                Direccion = "Jr. Progreso 45", Distrito = "Comas",
+                Tamano = Models.Enums.TamanoProducto.Grande, CantidadProductos = 5,
+                PrecioTotal = (5 * 10) + 60, // 110
                 Estado = Models.Enums.EstadoSolicitud.Aprobado, FechaCreacion = DateTime.UtcNow.AddDays(-1)
             }
         );

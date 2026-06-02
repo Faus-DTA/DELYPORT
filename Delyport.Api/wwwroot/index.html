@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delyport | Sistema de Gestión</title>
+    <title>Delyport | Panel del Operador</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;}
         .search-container { display: flex; gap: 10px; margin-bottom: 1.5rem; }
         .search-container input { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; outline: none; }
+        
+        /* Panel Inicio */
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;}
+        .home-card { text-align: center; cursor: pointer; transition: transform 0.3s; padding: 2.5rem 1.5rem; border-top: 3px solid transparent; }
+        .home-card:hover { transform: translateY(-5px); border-top-color: var(--accent); }
+        .home-card h3 { margin-bottom: 0.5rem; font-size: 1.4rem; color: #fff;}
+        .home-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;}
+        .home-card .btn-outline { width: 100%; border: 1px solid var(--accent); background: transparent; color: var(--accent); padding: 0.8rem; border-radius: 8px;}
+        .home-card:hover .btn-outline { background: var(--accent); color: white; }
+
+        .price-display { font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 1rem 0; text-align: center; background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 8px;}
     </style>
 </head>
 <body>
@@ -21,8 +32,9 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="active" onclick="switchTab('solicitudes', this)">📝 Solicitudes</li>
-                    <li onclick="switchTab('servicios', this)">🚚 Servicios Asignados</li>
+                    <li class="active" id="nav-inicio" onclick="switchTab('inicio', this)">🏠 Panel Principal</li>
+                    <li id="nav-solicitudes" onclick="switchTab('solicitudes', this)">📝 Solicitudes (Cotizador)</li>
+                    <li id="nav-servicios" onclick="switchTab('servicios', this)">🚚 Servicios Asignados</li>
                 </ul>
             </nav>
         </aside>
@@ -34,24 +46,50 @@
                     <input type="text" placeholder="Buscar general...">
                 </div>
                 <div class="user-profile">
-                    <span>Fausto (Admin)</span>
+                    <span>Fausto (Operador)</span>
                     <div class="avatar">F</div>
                 </div>
             </header>
 
             <div class="content-wrapper">
                 
-                <!-- Pestaña Solicitudes (HU-002) -->
-                <section id="tab-solicitudes" class="tab-content active">
+                <!-- Pestaña Inicio (Dashboard Principal) -->
+                <section id="tab-inicio" class="tab-content active">
+                    <div class="section-header" style="text-align:center;">
+                        <h1 style="font-size: 2.5rem; color:#fff;">Panel del Operador</h1>
+                        <p style="font-size: 1.1rem">Bienvenido. ¿Qué acción deseas realizar hoy?</p>
+                    </div>
+
+                    <div class="home-grid">
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-solicitudes').click()">
+                            <h3>Validar Solicitudes</h3>
+                            <p>Cotiza, aprueba o rechaza nuevas solicitudes entrantes.</p>
+                            <button class="btn-outline">Ir a Validación</button>
+                        </div>
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-servicios').click()">
+                            <h3>Asignar Conductores</h3>
+                            <p>Asigna un chofer a las solicitudes validadas o cambia estados.</p>
+                            <button class="btn-outline">Ir a Asignación</button>
+                        </div>
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-solicitudes').click()">
+                            <h3>Todas las Solicitudes</h3>
+                            <p>Visualiza el historial y cotizaciones completas del sistema.</p>
+                            <button class="btn-outline">Ver Todas</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestaña Solicitudes (Cotizador) -->
+                <section id="tab-solicitudes" class="tab-content">
                     <div class="section-header">
-                        <h1>Gestión de Solicitudes</h1>
-                        <p>Modifica las solicitudes que aún se encuentran en estado 'Registrado'.</p>
+                        <h1>Gestión y Cotización de Solicitudes</h1>
+                        <p>Agrega solicitudes. El sistema calculará el precio automáticamente por tamaño y distrito.</p>
                     </div>
 
                     <div class="card glass-panel">
                         <div class="header-actions">
                             <h3>Solicitudes Registradas</h3>
-                            <button class="btn btn-success" onclick="openCrearModal()">+ Nueva Solicitud</button>
+                            <button class="btn btn-success" onclick="openCrearModal()">+ Nueva Solicitud (Cotizar)</button>
                         </div>
                         <div class="table-responsive">
                             <table class="modern-table">
@@ -59,8 +97,9 @@
                                     <tr>
                                         <th>Código</th>
                                         <th>Cliente</th>
-                                        <th>Detalle</th>
-                                        <th>Peso (Kg)</th>
+                                        <th>Destino</th>
+                                        <th>Carga (Cant x Tam)</th>
+                                        <th>Precio Total</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
@@ -72,7 +111,7 @@
                     </div>
                 </section>
 
-                <!-- Pestaña Servicios (HU-005, HU-006) -->
+                <!-- Pestaña Servicios -->
                 <section id="tab-servicios" class="tab-content">
                     <div class="section-header">
                         <h1>Servicios Asignados</h1>
@@ -89,16 +128,14 @@
                             <div class="card-info">
                                 <span class="badge badge-pending" id="srv-estado">Pendiente</span>
                                 <h3 id="srv-codigo">Cargando...</h3>
-                                <p class="description" id="srv-desc">Obteniendo detalles del servicio asignado...</p>
+                                <p class="description" id="srv-desc">Obteniendo detalles...</p>
                                 <div class="route-info">
                                     <p><strong>Origen:</strong> <span id="srv-origen">-</span></p>
                                     <p><strong>Destino:</strong> <span id="srv-destino">-</span></p>
-                                    <p><strong>Tarifa:</strong> $<span id="srv-tarifa">-</span></p>
+                                    <p><strong>Tarifa:</strong> S/<span id="srv-tarifa">-</span></p>
                                 </div>
                             </div>
-                            <div class="card-actions" id="srv-actions">
-                                <!-- Botones inyectados por JS según el estado -->
-                            </div>
+                            <div class="card-actions" id="srv-actions"></div>
                         </div>
                     </div>
                 </section>
@@ -109,47 +146,77 @@
 
     <!-- Modal Editar Solicitud -->
     <div id="modal-editar" class="modal">
-        <div class="modal-content glass-panel">
+        <div class="modal-content glass-panel" style="width:500px;">
             <span class="close-btn" onclick="closeModal('modal-editar')">&times;</span>
             <h2>Editar Solicitud</h2>
             <form id="form-editar">
                 <input type="hidden" id="edit-id">
-                <div class="form-group">
-                    <label>Cliente</label>
-                    <input type="text" id="edit-cliente" required maxlength="100">
+                <div class="form-group"><label>Cliente</label><input type="text" id="edit-cliente" required maxlength="100"></div>
+                <div class="form-group"><label>Detalle de Carga</label><input type="text" id="edit-detalle" required maxlength="500"></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Dirección</label><input type="text" id="edit-direccion" required maxlength="200"></div>
+                    <div class="form-group" style="flex:1"><label>Distrito</label>
+                        <select id="edit-distrito" onchange="simularPrecio('edit')">
+                            <option value="Santa Anita">Santa Anita</option>
+                            <option value="El Agustino">El Agustino</option>
+                            <option value="Comas">Comas</option>
+                            <option value="Callao">Callao</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Detalle de Carga</label>
-                    <textarea id="edit-detalle" required maxlength="500"></textarea>
+
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Tamaño</label>
+                        <select id="edit-tamano" onchange="simularPrecio('edit')">
+                            <option value="0">Pequeño</option>
+                            <option value="1">Mediano</option>
+                            <option value="2">Grande</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1"><label>Cantidad</label><input type="number" id="edit-cantidad" min="1" required oninput="simularPrecio('edit')"></div>
                 </div>
-                <div class="form-group">
-                    <label>Peso (Kg)</label>
-                    <input type="number" id="edit-peso" step="0.1" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                
+                <div class="price-display">Precio Estimado: S/ <span id="edit-precio-ui">0.00</span></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Cambios</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal Crear Solicitud -->
+    <!-- Modal Crear Solicitud (Cotizador) -->
     <div id="modal-crear" class="modal">
-        <div class="modal-content glass-panel">
+        <div class="modal-content glass-panel" style="width:500px;">
             <span class="close-btn" onclick="closeModal('modal-crear')">&times;</span>
-            <h2>Nueva Solicitud</h2>
+            <h2>Cotizar Nueva Solicitud</h2>
             <form id="form-crear">
-                <div class="form-group">
-                    <label>Cliente</label>
-                    <input type="text" id="crear-cliente" required maxlength="100">
+                <div class="form-group"><label>Cliente</label><input type="text" id="crear-cliente" required maxlength="100"></div>
+                <div class="form-group"><label>Detalle de Carga</label><input type="text" id="crear-detalle" required maxlength="500"></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Dirección</label><input type="text" id="crear-direccion" required maxlength="200"></div>
+                    <div class="form-group" style="flex:1"><label>Distrito</label>
+                        <select id="crear-distrito" onchange="simularPrecio('crear')">
+                            <option value="Santa Anita">Santa Anita (S/40 base)</option>
+                            <option value="El Agustino">El Agustino (S/30 base)</option>
+                            <option value="Comas">Comas (S/60 base)</option>
+                            <option value="Callao">Callao (S/90 base)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Detalle de Carga</label>
-                    <textarea id="crear-detalle" required maxlength="500"></textarea>
+
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Tamaño</label>
+                        <select id="crear-tamano" onchange="simularPrecio('crear')">
+                            <option value="0">Pequeño (S/3 c/u)</option>
+                            <option value="1">Mediano (S/6 c/u)</option>
+                            <option value="2">Grande (S/10 c/u)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1"><label>Cantidad</label><input type="number" id="crear-cantidad" min="1" value="1" required oninput="simularPrecio('crear')"></div>
                 </div>
-                <div class="form-group">
-                    <label>Peso (Kg)</label>
-                    <input type="number" id="crear-peso" step="0.1" required>
-                </div>
-                <button type="submit" class="btn btn-success">Crear Solicitud</button>
+
+                <div class="price-display">Cotización: S/ <span id="crear-precio-ui">0.00</span></div>
+                <button type="submit" class="btn btn-success" style="width:100%">Generar Solicitud</button>
             </form>
         </div>
     </div>

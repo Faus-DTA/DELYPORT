@@ -8,7 +8,11 @@ public class SolicitudResponseDto
     public string Codigo { get; set; } = string.Empty;
     public string Cliente { get; set; } = string.Empty;
     public string DetalleCarga { get; set; } = string.Empty;
-    public decimal PesoKg { get; set; }
+    public string Direccion { get; set; } = string.Empty;
+    public string Distrito { get; set; } = string.Empty;
+    public string TamanoProducto { get; set; } = string.Empty;
+    public int CantidadProductos { get; set; }
+    public decimal PrecioTotal { get; set; }
     public EstadoSolicitud Estado { get; set; }
     public DateTime FechaCreacion { get; set; }
 }
