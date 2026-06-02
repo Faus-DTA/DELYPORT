@@ -5,7 +5,7 @@ namespace Delyport.Api.Services;
 
 public interface IAsignacionService
 {
-    Task<IEnumerable<AsignacionServicio>> GetAllAsignacionesAsync();
+    Task<IEnumerable<AsignacionListDto>> GetAllAsignacionesAsync();
     Task<AsignacionServicio?> GetAsignacionByIdAsync(int id);
     Task<AsignacionServicio> CrearDesdeSolicitudAsync(int solicitudId);
     Task<ServicioDetalleDto?> ObtenerDetalleServicioAsync(int id);

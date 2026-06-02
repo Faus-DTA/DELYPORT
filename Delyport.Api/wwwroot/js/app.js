@@ -237,7 +237,7 @@ async function loadHistorial() {
                     <td>${s.id}</td>
                     <td><strong>${s.codigoServicio}</strong></td>
                     <td>${s.origen} ➡️ ${s.destino}</td>
-                    <td>C-${s.conductorId}</td>
+                    <td>🧑‍✈️ ${s.conductorNombre}</td>
                     <td>S/${s.tarifa.toFixed(2)}</td>
                     <td><span class="badge ${badgesEnum[s.estado]}">${estadosEnum[s.estado]}</span></td>
                 </tr>
@@ -258,7 +258,7 @@ async function loadServicio() {
         const srv = await response.json();
 
         document.getElementById('srv-codigo').innerText = srv.codigoServicio;
-        document.getElementById('srv-desc').innerText = srv.descripcion;
+        document.getElementById('srv-desc').innerHTML = `${srv.descripcion}<br><br><strong>Conductor Asignado:</strong> ${srv.conductorNombre}`;
         document.getElementById('srv-origen').innerText = srv.origen;
         document.getElementById('srv-destino').innerText = srv.destino;
         document.getElementById('srv-tarifa').innerText = srv.tarifa.toFixed(2);
@@ -266,7 +266,7 @@ async function loadServicio() {
         const badge = document.getElementById('srv-estado');
         badge.innerText = estadosEnum[srv.estado];
         badge.className = `badge ${badgesEnum[srv.estado]}`;
-        renderActions(srv.estado);
+        renderActions(srv.estado, srv.conductorId);
     } catch (error) {
         showToast('Servicio no encontrado', true);
         document.getElementById('srv-codigo').innerText = 'No encontrado';
@@ -275,13 +275,13 @@ async function loadServicio() {
     }
 }
 
-function renderActions(estadoActual) {
+function renderActions(estadoActual, conductorId) {
     const actionsDiv = document.getElementById('srv-actions');
     actionsDiv.innerHTML = '';
     if(estadoActual === 0) { 
         actionsDiv.innerHTML = `
-            <button class="btn btn-success" onclick="responderAsignacion(true)">✅ Aceptar</button>
-            <button class="btn btn-danger" onclick="responderAsignacion(false)">❌ Rechazar</button>
+            <button class="btn btn-success" onclick="responderAsignacion(true, ${conductorId})">✅ Conductor Acepta</button>
+            <button class="btn btn-danger" onclick="responderAsignacion(false, ${conductorId})">❌ Conductor Rechaza</button>
         `;
     } else {
         actionsDiv.innerHTML = `
@@ -297,15 +297,16 @@ function renderActions(estadoActual) {
     }
 }
 
-async function responderAsignacion(aceptar) {
-    const payload = { aceptar: aceptar, motivo: "", conductorId: 105 }; 
+async function responderAsignacion(aceptar, conductorId) {
+    const payload = { aceptar: aceptar, motivo: "", conductorId: conductorId }; 
     try {
         const res = await fetch(`${API_BASE}/asignaciones/${currentServicioId}/responder`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
         });
         if(!res.ok) throw new Error('Fallo al responder');
-        showToast(aceptar ? 'Servicio Aceptado!' : 'Servicio Rechazado');
+        showToast(aceptar ? '¡El conductor ha aceptado el servicio!' : 'Servicio Rechazado por el conductor');
         loadServicio();
+        loadHistorial();
     } catch (e) { showToast(e.message, true); }
 }
 
