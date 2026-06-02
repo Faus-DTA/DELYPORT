@@ -14,9 +14,20 @@ public class AsignacionService : IAsignacionService
         _context = context;
     }
 
-    public async Task<IEnumerable<AsignacionServicio>> GetAllAsignacionesAsync()
+    public async Task<IEnumerable<AsignacionListDto>> GetAllAsignacionesAsync()
     {
-        return await _context.AsignacionesServicio.OrderByDescending(x => x.Id).ToListAsync();
+        return await _context.AsignacionesServicio
+            .Include(a => a.Conductor)
+            .OrderByDescending(x => x.Id)
+            .Select(s => new AsignacionListDto
+            {
+                Id = s.Id, CodigoServicio = s.CodigoServicio,
+                Origen = s.Origen, Destino = s.Destino,
+                ConductorId = s.ConductorId,
+                ConductorNombre = s.Conductor != null ? s.Conductor.NombreCompleto : "Sin Conductor",
+                Tarifa = s.Tarifa, Estado = (int)s.Estado
+            })
+            .ToListAsync();
     }
 
     public async Task<AsignacionServicio?> GetAsignacionByIdAsync(int id)
@@ -31,13 +42,11 @@ public class AsignacionService : IAsignacionService
     public async Task<ServicioDetalleDto?> ObtenerDetalleServicioAsync(int id)
     {
         var servicio = await _context.AsignacionesServicio
-            .AsNoTracking()
+            .Include(s => s.Conductor)
             .FirstOrDefaultAsync(s => s.Id == id);
 
-        if (servicio == null)
-            return null;
+        if (servicio == null) return null;
 
-        // Mapeo manual (se podría usar AutoMapper en el futuro)
         return new ServicioDetalleDto
         {
             Id = servicio.Id,
@@ -45,8 +54,10 @@ public class AsignacionService : IAsignacionService
             Descripcion = servicio.Descripcion,
             Origen = servicio.Origen,
             Destino = servicio.Destino,
+            ConductorId = servicio.ConductorId,
+            ConductorNombre = servicio.Conductor != null ? servicio.Conductor.NombreCompleto : "Sin Conductor",
             Tarifa = servicio.Tarifa,
-            Estado = servicio.Estado,
+            Estado = (int)servicio.Estado,
             FechaAsignacion = servicio.FechaAsignacion
         };
     }
@@ -63,7 +74,7 @@ public class AsignacionService : IAsignacionService
         var asignacion = new AsignacionServicio
         {
             CodigoServicio = "SRV-" + new Random().Next(1000, 9999).ToString(),
-            ConductorId = 100 + new Random().Next(1, 10), // Conductor dummy
+            ConductorId = new Random().Next(1, 5), 
             Descripcion = $"Entrega a {solicitud.Cliente}: {solicitud.DetalleCarga}",
             Origen = "Almacén Central Santa Anita",
             Destino = solicitud.Distrito,

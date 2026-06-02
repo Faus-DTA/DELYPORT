@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<HistorialEstado> HistorialEstados { get; set; }
     public DbSet<Solicitud> Solicitudes { get; set; }
     public DbSet<SolicitudProducto> SolicitudProductos { get; set; }
+    public DbSet<Conductor> Conductores { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,16 +35,30 @@ public class ApplicationDbContext : DbContext
             .WithOne(p => p.Solicitud)
             .HasForeignKey(p => p.SolicitudId);
 
-        // DATA DE PRUEBA: 10 Solicitudes, 10 Asignaciones y Múltiples Productos
+        modelBuilder.Entity<AsignacionServicio>()
+            .HasOne(a => a.Conductor)
+            .WithMany()
+            .HasForeignKey(a => a.ConductorId);
+
+        // DATA DE PRUEBA: 4 Conductores fijos
+        var conductores = new Conductor[]
+        {
+            new Conductor { Id = 1, NombreCompleto = "Juan Pérez", Telefono = "987654321", PlacaVehiculo = "ABC-123" },
+            new Conductor { Id = 2, NombreCompleto = "Carlos Ruiz", Telefono = "987654322", PlacaVehiculo = "DEF-456" },
+            new Conductor { Id = 3, NombreCompleto = "María Silva", Telefono = "987654323", PlacaVehiculo = "GHI-789" },
+            new Conductor { Id = 4, NombreCompleto = "Luis Gómez", Telefono = "987654324", PlacaVehiculo = "JKL-012" }
+        };
+        modelBuilder.Entity<Conductor>().HasData(conductores);
+
         // Asignaciones
         var asignaciones = new AsignacionServicio[10];
         string origenFijo = "Almacén Central Santa Anita";
         string[] destinos = { "Santa Anita", "Comas", "El Agustino", "Los Olivos", "Miraflores" };
-        int[] estadosAsignacion = { 0, 1, 3, 3, 0, 2, 3, 1, 0, 3 }; // 0:Pendiente, 1:Aceptado, 2:Rechazado, 3:EnProceso
+        int[] estadosAsignacion = { 0, 1, 3, 3, 0, 2, 3, 1, 0, 3 }; 
         
         for(int i=0; i<10; i++) {
             asignaciones[i] = new AsignacionServicio {
-                Id = i+1, CodigoServicio = $"SRV-00{i+1}", ConductorId = 100 + i,
+                Id = i+1, CodigoServicio = $"SRV-00{i+1}", ConductorId = (i%4)+1, // De 1 a 4
                 Descripcion = $"Ruta de entrega #{i+1}",
                 Origen = origenFijo, Destino = destinos[i%5],
                 FechaAsignacion = DateTime.UtcNow, Tarifa = 150.0m + (i*10),
