@@ -2,14 +2,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Delyport.Api.Models.DTOs;
 
-public class UpdateSolicitudDto
+public class CrearSolicitudDto
 {
     [Required(ErrorMessage = "El cliente es obligatorio")]
-    [MaxLength(100, ErrorMessage = "El nombre del cliente no puede exceder los 100 caracteres")]
+    [MaxLength(100)]
     public string Cliente { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El detalle de la carga es obligatorio")]
-    [MaxLength(500, ErrorMessage = "El detalle no puede exceder los 500 caracteres")]
+    [MaxLength(500)]
     public string DetalleCarga { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "La dirección es obligatoria")]

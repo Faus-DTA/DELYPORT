@@ -15,6 +15,27 @@ public class AsignacionesController : ControllerBase
         _asignacionService = asignacionService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var asignaciones = await _asignacionService.GetAllAsignacionesAsync();
+        return Ok(asignaciones);
+    }
+
+    [HttpPost("desde-solicitud/{solicitudId}")]
+    public async Task<IActionResult> CrearDesdeSolicitud(int solicitudId)
+    {
+        try
+        {
+            var asignacion = await _asignacionService.CrearDesdeSolicitudAsync(solicitudId);
+            return Ok(asignacion);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     /// <summary>
     /// Obtiene el detalle de un servicio asignado por su ID (TASK-022)
     /// </summary>

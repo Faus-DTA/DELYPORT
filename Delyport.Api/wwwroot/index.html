@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delyport | Panel del Operador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;}
+        .search-container { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .search-container input { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; outline: none; }
+        
+        /* Panel Inicio */
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem;}
+        .home-card { text-align: center; cursor: pointer; transition: transform 0.3s; padding: 2.5rem 1.5rem; border-top: 3px solid transparent; }
+        .home-card:hover { transform: translateY(-5px); border-top-color: var(--accent); }
+        .home-card h3 { margin-bottom: 0.5rem; font-size: 1.4rem; color: #fff;}
+        .home-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;}
+        .home-card .btn-outline { width: 100%; border: 1px solid var(--accent); background: transparent; color: var(--accent); padding: 0.8rem; border-radius: 8px;}
+        .home-card:hover .btn-outline { background: var(--accent); color: white; }
+
+        .price-display { font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 1rem 0; text-align: center; background: rgba(16, 185, 129, 0.1); padding: 0.5rem; border-radius: 8px;}
+        
+        .productos-list { border: 1px dashed var(--glass-border); padding: 10px; border-radius: 8px; margin-bottom: 10px;}
+        .producto-row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
+        .btn-add-prod { width: 100%; padding: 8px; background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px dashed #3b82f6; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-bottom:10px; }
+        .btn-add-prod:hover { background: rgba(59, 130, 246, 0.4); }
+        .btn-remove-prod { background: var(--danger); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>📦 Delyport</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" id="nav-inicio" onclick="switchTab('inicio', this)">🏠 Panel Principal</li>
+                    <li id="nav-solicitudes" onclick="switchTab('solicitudes', this)">📝 Solicitudes (Cotizador)</li>
+                    <li id="nav-servicios" onclick="switchTab('servicios', this)">🚚 Servicios Asignados</li>
+                    <li id="nav-historial" onclick="switchTab('historial', this)">📊 Historial de Carreras</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar general...">
+                </div>
+                <div class="user-profile">
+                    <span>Fausto (Operador)</span>
+                    <div class="avatar">F</div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                
+                <!-- Pestaña Inicio -->
+                <section id="tab-inicio" class="tab-content active">
+                    <div class="section-header" style="text-align:center;">
+                        <h1 style="font-size: 2.5rem; color:#fff;">Panel del Operador</h1>
+                        <p style="font-size: 1.1rem">Bienvenido. ¿Qué acción deseas realizar hoy?</p>
+                    </div>
+
+                    <div class="home-grid">
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-solicitudes').click()">
+                            <h3>Validar Solicitudes</h3>
+                            <p>Cotiza, aprueba o rechaza nuevas solicitudes entrantes con múltiples productos.</p>
+                            <button class="btn-outline">Ir a Validación</button>
+                        </div>
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-servicios').click()">
+                            <h3>Asignar Conductores</h3>
+                            <p>Asigna un chofer a las solicitudes validadas o cambia estados.</p>
+                            <button class="btn-outline">Ir a Asignación</button>
+                        </div>
+                        <div class="card glass-panel home-card" onclick="document.getElementById('nav-historial').click()">
+                            <h3>Todas las Carreras</h3>
+                            <p>Visualiza el historial completo del sistema y el estado en vivo.</p>
+                            <button class="btn-outline">Ver Todas</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestaña Historial de Carreras (Nueva) -->
+                <section id="tab-historial" class="tab-content">
+                    <div class="section-header">
+                        <h1>Historial Global de Carreras</h1>
+                        <p>Supervisa todos los servicios generados en el sistema.</p>
+                    </div>
+
+                    <div class="card glass-panel">
+                        <h3>Todos los Servicios (10 Ejemplos)</h3>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Código</th>
+                                        <th>Ruta (Origen - Destino)</th>
+                                        <th>Conductor (ID)</th>
+                                        <th>Tarifa</th>
+                                        <th>Estado Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historial-tbody">
+                                    <!-- Datos inyectados por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestaña Solicitudes (Cotizador Multiprod) -->
+                <section id="tab-solicitudes" class="tab-content">
+                    <div class="section-header">
+                        <h1>Gestión y Cotización de Solicitudes</h1>
+                        <p>Agrega solicitudes con múltiples productos. El sistema calculará el precio automáticamente.</p>
+                    </div>
+
+                    <div class="card glass-panel">
+                        <div class="header-actions">
+                            <h3>Solicitudes Registradas</h3>
+                            <button class="btn btn-success" onclick="openCrearModal()">+ Nueva Solicitud (Cotizar)</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="modern-table">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Destino</th>
+                                        <th>Productos</th>
+                                        <th>Precio Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="solicitudes-tbody">
+                                    <!-- Datos inyectados por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pestaña Servicios -->
+                <section id="tab-servicios" class="tab-content">
+                    <div class="section-header">
+                        <h1>Servicios Asignados</h1>
+                        <p>Responde a la asignación o actualiza el estado de tu servicio.</p>
+                    </div>
+
+                    <div class="search-container">
+                        <input type="number" id="buscar-srv-id" placeholder="Ingresa ID del Servicio (Ej: 1 al 10)">
+                        <button class="btn btn-primary" onclick="buscarServicio()">Buscar</button>
+                    </div>
+
+                    <div class="cards-grid">
+                        <div class="card glass-panel flex-card">
+                            <div class="card-info">
+                                <span class="badge badge-pending" id="srv-estado">Pendiente</span>
+                                <h3 id="srv-codigo">Cargando...</h3>
+                                <p class="description" id="srv-desc">Obteniendo detalles...</p>
+                                <div class="route-info">
+                                    <p><strong>Origen:</strong> <span id="srv-origen">-</span></p>
+                                    <p><strong>Destino:</strong> <span id="srv-destino">-</span></p>
+                                    <p><strong>Tarifa:</strong> S/<span id="srv-tarifa">-</span></p>
+                                </div>
+                            </div>
+                            <div class="card-actions" id="srv-actions"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Editar Solicitud -->
+    <div id="modal-editar" class="modal">
+        <div class="modal-content glass-panel" style="width:500px; max-height:90vh; overflow-y:auto;">
+            <span class="close-btn" onclick="closeModal('modal-editar')">&times;</span>
+            <h2>Editar Solicitud Multi-Producto</h2>
+            <form id="form-editar">
+                <input type="hidden" id="edit-id">
+                <div class="form-group"><label>Cliente</label><input type="text" id="edit-cliente" required maxlength="100"></div>
+                <div class="form-group"><label>Detalle de Carga</label><input type="text" id="edit-detalle" required maxlength="500"></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Dirección</label><input type="text" id="edit-direccion" required maxlength="200"></div>
+                    <div class="form-group" style="flex:1"><label>Distrito</label>
+                        <select id="edit-distrito" onchange="simularPrecio('edit')">
+                            <option value="Santa Anita">Santa Anita</option>
+                            <option value="El Agustino">El Agustino</option>
+                            <option value="Comas">Comas</option>
+                            <option value="Callao">Callao</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Productos</label>
+                    <div id="edit-productos-container" class="productos-list"></div>
+                    <button type="button" class="btn-add-prod" onclick="addProductoRow('edit')">+ Añadir Producto</button>
+                </div>
+                
+                <div class="price-display">Precio Estimado: S/ <span id="edit-precio-ui">0.00</span></div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Crear Solicitud (Cotizador) -->
+    <div id="modal-crear" class="modal">
+        <div class="modal-content glass-panel" style="width:500px; max-height:90vh; overflow-y:auto;">
+            <span class="close-btn" onclick="closeModal('modal-crear')">&times;</span>
+            <h2>Cotizar Nueva Solicitud</h2>
+            <form id="form-crear">
+                <div class="form-group"><label>Cliente</label><input type="text" id="crear-cliente" required maxlength="100"></div>
+                <div class="form-group"><label>Detalle de Carga</label><input type="text" id="crear-detalle" required maxlength="500"></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1"><label>Dirección</label><input type="text" id="crear-direccion" required maxlength="200"></div>
+                    <div class="form-group" style="flex:1"><label>Distrito</label>
+                        <select id="crear-distrito" onchange="simularPrecio('crear')">
+                            <option value="Santa Anita">Santa Anita (S/40)</option>
+                            <option value="El Agustino">El Agustino (S/30)</option>
+                            <option value="Comas">Comas (S/60)</option>
+                            <option value="Callao">Callao (S/90)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Productos</label>
+                    <div id="crear-productos-container" class="productos-list"></div>
+                    <button type="button" class="btn-add-prod" onclick="addProductoRow('crear')">+ Añadir Producto</button>
+                </div>
+
+                <div class="price-display">Cotización: S/ <span id="crear-precio-ui">0.00</span></div>
+                <button type="submit" class="btn btn-success" style="width:100%">Generar Solicitud</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificación emergente (Toast) -->
+    <div id="toast" class="toast">Notificación</div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

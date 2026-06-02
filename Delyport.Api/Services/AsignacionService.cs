@@ -14,6 +14,20 @@ public class AsignacionService : IAsignacionService
         _context = context;
     }
 
+    public async Task<IEnumerable<AsignacionServicio>> GetAllAsignacionesAsync()
+    {
+        return await _context.AsignacionesServicio.OrderByDescending(x => x.Id).ToListAsync();
+    }
+
+    public async Task<AsignacionServicio?> GetAsignacionByIdAsync(int id)
+    {
+        var servicio = await _context.AsignacionesServicio
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == id);
+            
+        return servicio;
+    }
+
     public async Task<ServicioDetalleDto?> ObtenerDetalleServicioAsync(int id)
     {
         var servicio = await _context.AsignacionesServicio
@@ -35,6 +49,38 @@ public class AsignacionService : IAsignacionService
             Estado = servicio.Estado,
             FechaAsignacion = servicio.FechaAsignacion
         };
+    }
+
+    public async Task<AsignacionServicio> CrearDesdeSolicitudAsync(int solicitudId)
+    {
+        var solicitud = await _context.Solicitudes.Include(s => s.Productos).FirstOrDefaultAsync(s => s.Id == solicitudId);
+        if (solicitud == null) throw new InvalidOperationException("Solicitud no encontrada");
+        
+        if (solicitud.Estado == Models.Enums.EstadoSolicitud.Aprobado)
+            throw new InvalidOperationException("La solicitud ya fue aprobada y asignada.");
+
+        // Crear la asignación basada en la solicitud
+        var asignacion = new AsignacionServicio
+        {
+            CodigoServicio = "SRV-" + new Random().Next(1000, 9999).ToString(),
+            ConductorId = 100 + new Random().Next(1, 10), // Conductor dummy
+            Descripcion = $"Entrega a {solicitud.Cliente}: {solicitud.DetalleCarga}",
+            Origen = "Almacén Central Santa Anita",
+            Destino = solicitud.Distrito,
+            FechaAsignacion = DateTime.UtcNow,
+            Tarifa = solicitud.PrecioTotal,
+            Estado = Models.Enums.EstadoServicio.Pendiente
+        };
+
+        _context.AsignacionesServicio.Add(asignacion);
+
+        // Marcar la solicitud como aprobada
+        solicitud.Estado = Models.Enums.EstadoSolicitud.Aprobado;
+        _context.Solicitudes.Update(solicitud);
+
+        await _context.SaveChangesAsync();
+
+        return asignacion;
     }
 
     public async Task<bool> ResponderAsignacionAsync(int id, RespuestaAsignacionDto respuesta)

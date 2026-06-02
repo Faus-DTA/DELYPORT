@@ -21,8 +21,19 @@ public class Solicitud
     [MaxLength(500)]
     public string DetalleCarga { get; set; } = string.Empty;
 
+    [Required]
+    [MaxLength(200)]
+    public string Direccion { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(100)]
+    public string Distrito { get; set; } = string.Empty;
+
+    // Relacion 1:N
+    public ICollection<SolicitudProducto> Productos { get; set; } = new List<SolicitudProducto>();
+
     [Column(TypeName = "decimal(18,2)")]
-    public decimal PesoKg { get; set; }
+    public decimal PrecioTotal { get; set; }
 
     public EstadoSolicitud Estado { get; set; } = EstadoSolicitud.Registrado;
 
