@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<AsignacionServicio> AsignacionesServicio { get; set; }
     public DbSet<HistorialEstado> HistorialEstados { get; set; }
+    public DbSet<Solicitud> Solicitudes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,22 @@ public class ApplicationDbContext : DbContext
                 Tarifa = 850.50m,
                 Estado = Models.Enums.EstadoServicio.Pendiente,
                 FechaAsignacion = DateTime.UtcNow
+            }
+        );
+
+        // Seed Data para Solicitudes
+        modelBuilder.Entity<Solicitud>().HasData(
+            new Solicitud
+            {
+                Id = 1, Codigo = "SOL-100", Cliente = "Importaciones XYZ",
+                DetalleCarga = "10 Cajas de Teclados Mecánicos", PesoKg = 150.5m,
+                Estado = Models.Enums.EstadoSolicitud.Registrado, FechaCreacion = DateTime.UtcNow
+            },
+            new Solicitud
+            {
+                Id = 2, Codigo = "SOL-101", Cliente = "Comercial Alfa",
+                DetalleCarga = "Repuestos de maquinaria agrícola", PesoKg = 850.0m,
+                Estado = Models.Enums.EstadoSolicitud.Aprobado, FechaCreacion = DateTime.UtcNow.AddDays(-1)
             }
         );
     }
