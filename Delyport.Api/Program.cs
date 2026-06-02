@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Inyección de Dependencias
 builder.Services.AddScoped<IAsignacionService, AsignacionService>();
+builder.Services.AddScoped<ISolicitudService, SolicitudService>();
 
 var app = builder.Build();
 
