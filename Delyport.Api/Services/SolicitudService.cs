@@ -61,4 +61,31 @@ public class SolicitudService : ISolicitudService
             FechaCreacion = solicitud.FechaCreacion
         };
     }
+
+    public async Task<SolicitudResponseDto> CrearSolicitudAsync(CrearSolicitudDto dto)
+    {
+        var nuevaSolicitud = new Models.Entities.Solicitud
+        {
+            Codigo = "SOL-" + new Random().Next(1000, 9999).ToString(),
+            Cliente = dto.Cliente,
+            DetalleCarga = dto.DetalleCarga,
+            PesoKg = dto.PesoKg,
+            Estado = EstadoSolicitud.Registrado,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        _context.Solicitudes.Add(nuevaSolicitud);
+        await _context.SaveChangesAsync();
+
+        return new SolicitudResponseDto
+        {
+            Id = nuevaSolicitud.Id,
+            Codigo = nuevaSolicitud.Codigo,
+            Cliente = nuevaSolicitud.Cliente,
+            DetalleCarga = nuevaSolicitud.DetalleCarga,
+            PesoKg = nuevaSolicitud.PesoKg,
+            Estado = nuevaSolicitud.Estado,
+            FechaCreacion = nuevaSolicitud.FechaCreacion
+        };
+    }
 }

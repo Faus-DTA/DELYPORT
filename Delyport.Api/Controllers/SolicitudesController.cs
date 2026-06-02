@@ -48,4 +48,17 @@ public class SolicitudesController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Crea una nueva solicitud de importación (Agregado para UI Testing)
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<SolicitudResponseDto>> CrearSolicitud([FromBody] CrearSolicitudDto request)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var nueva = await _solicitudService.CrearSolicitudAsync(request);
+        return CreatedAtAction(nameof(GetRegistradas), new { id = nueva.Id }, nueva);
+    }
 }

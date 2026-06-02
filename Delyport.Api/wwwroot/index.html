@@ -6,6 +6,11 @@
     <title>Delyport | Sistema de Gestión</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;}
+        .search-container { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .search-container input { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white; outline: none; }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -26,7 +31,7 @@
         <main class="main-content">
             <header class="topbar">
                 <div class="search-bar">
-                    <input type="text" placeholder="Buscar...">
+                    <input type="text" placeholder="Buscar general...">
                 </div>
                 <div class="user-profile">
                     <span>Fausto (Admin)</span>
@@ -44,7 +49,10 @@
                     </div>
 
                     <div class="card glass-panel">
-                        <h3>Solicitudes Registradas</h3>
+                        <div class="header-actions">
+                            <h3>Solicitudes Registradas</h3>
+                            <button class="btn btn-success" onclick="openCrearModal()">+ Nueva Solicitud</button>
+                        </div>
                         <div class="table-responsive">
                             <table class="modern-table">
                                 <thead>
@@ -69,6 +77,11 @@
                     <div class="section-header">
                         <h1>Servicios Asignados</h1>
                         <p>Responde a la asignación o actualiza el estado de tu servicio.</p>
+                    </div>
+
+                    <div class="search-container">
+                        <input type="number" id="buscar-srv-id" placeholder="Ingresa ID del Servicio (Ej: 1 o 2)">
+                        <button class="btn btn-primary" onclick="buscarServicio()">Buscar</button>
                     </div>
 
                     <div class="cards-grid">
@@ -97,7 +110,7 @@
     <!-- Modal Editar Solicitud -->
     <div id="modal-editar" class="modal">
         <div class="modal-content glass-panel">
-            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <span class="close-btn" onclick="closeModal('modal-editar')">&times;</span>
             <h2>Editar Solicitud</h2>
             <form id="form-editar">
                 <input type="hidden" id="edit-id">
@@ -114,6 +127,29 @@
                     <input type="number" id="edit-peso" step="0.1" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Crear Solicitud -->
+    <div id="modal-crear" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn" onclick="closeModal('modal-crear')">&times;</span>
+            <h2>Nueva Solicitud</h2>
+            <form id="form-crear">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="crear-cliente" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Detalle de Carga</label>
+                    <textarea id="crear-detalle" required maxlength="500"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Peso (Kg)</label>
+                    <input type="number" id="crear-peso" step="0.1" required>
+                </div>
+                <button type="submit" class="btn btn-success">Crear Solicitud</button>
             </form>
         </div>
     </div>

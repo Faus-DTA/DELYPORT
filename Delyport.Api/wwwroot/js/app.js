@@ -1,13 +1,16 @@
 const API_BASE = '/api';
-let currentServicioId = 1; // Para la demo asumimos el servicio 1
+let currentServicioId = 1; // Para la demo inicial
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSolicitudes();
     loadServicio();
     
     document.getElementById('form-editar').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveSolicitud();
+        e.preventDefault(); saveSolicitud();
+    });
+
+    document.getElementById('form-crear').addEventListener('submit', function(e) {
+        e.preventDefault(); crearSolicitud();
     });
 });
 
@@ -23,7 +26,6 @@ function switchTab(tabId, element) {
     if(tabId === 'servicios') loadServicio();
 }
 
-// Mostrar Toast
 function showToast(message, isError = false) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -31,8 +33,12 @@ function showToast(message, isError = false) {
     setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
 }
 
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
 /* ==============================================
-   HU-002: GESTIÓN DE SOLICITUDES
+   HU-002: GESTIÓN Y CREACIÓN DE SOLICITUDES
    ============================================== */
 
 async function loadSolicitudes() {
@@ -63,7 +69,6 @@ async function loadSolicitudes() {
             `;
         });
     } catch (error) {
-        console.error(error);
         showToast('Fallo al cargar solicitudes', true);
     }
 }
@@ -76,8 +81,9 @@ function openEditModal(sol) {
     document.getElementById('modal-editar').style.display = 'flex';
 }
 
-function closeModal() {
-    document.getElementById('modal-editar').style.display = 'none';
+function openCrearModal() {
+    document.getElementById('form-crear').reset();
+    document.getElementById('modal-crear').style.display = 'flex';
 }
 
 async function saveSolicitud() {
@@ -94,14 +100,31 @@ async function saveSolicitud() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-
-        if(!response.ok) {
-            const err = await response.json();
-            throw new Error(err.message || 'Error al actualizar');
-        }
-
+        if(!response.ok) throw new Error('Error al actualizar la solicitud');
         showToast('Solicitud actualizada con éxito');
-        closeModal();
+        closeModal('modal-editar');
+        loadSolicitudes();
+    } catch (error) {
+        showToast(error.message, true);
+    }
+}
+
+async function crearSolicitud() {
+    const data = {
+        cliente: document.getElementById('crear-cliente').value,
+        detalleCarga: document.getElementById('crear-detalle').value,
+        pesoKg: parseFloat(document.getElementById('crear-peso').value)
+    };
+
+    try {
+        const response = await fetch(`${API_BASE}/solicitudes`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if(!response.ok) throw new Error('Error al crear la solicitud');
+        showToast('Solicitud creada con éxito');
+        closeModal('modal-crear');
         loadSolicitudes();
     } catch (error) {
         showToast(error.message, true);
@@ -113,7 +136,15 @@ async function saveSolicitud() {
    ============================================== */
 
 const estadosEnum = { 0: 'Pendiente', 1: 'Aceptado', 2: 'Rechazado', 3: 'En Proceso' };
-const badgesEnum = { 0: 'badge-pending', 1: 'badge-process', 2: 'badge-process', 3: 'badge-process' }; // Colores simplificados
+const badgesEnum = { 0: 'badge-pending', 1: 'badge-process', 2: 'badge-process', 3: 'badge-process' };
+
+function buscarServicio() {
+    const id = document.getElementById('buscar-srv-id').value;
+    if(id) {
+        currentServicioId = id;
+        loadServicio();
+    }
+}
 
 async function loadServicio() {
     try {
@@ -133,31 +164,39 @@ async function loadServicio() {
 
         renderActions(srv.estado);
     } catch (error) {
-        document.getElementById('srv-desc').innerText = "Error: no se pudo obtener el servicio. Verifica que la BD esté actualizada.";
+        showToast('Servicio no encontrado (ID: '+currentServicioId+')', true);
+        document.getElementById('srv-codigo').innerText = 'No encontrado';
+        document.getElementById('srv-desc').innerText = '-';
+        document.getElementById('srv-actions').innerHTML = '';
     }
 }
 
-function renderActions(estado) {
+function renderActions(estadoActual) {
     const actionsDiv = document.getElementById('srv-actions');
     actionsDiv.innerHTML = '';
 
-    if(estado === 0) { // Pendiente (HU-005)
+    if(estadoActual === 0) { // Pendiente (HU-005)
         actionsDiv.innerHTML = `
             <button class="btn btn-success" onclick="responderAsignacion(true)">✅ Aceptar Servicio</button>
             <button class="btn btn-danger" onclick="responderAsignacion(false)">❌ Rechazar</button>
         `;
-    } else if(estado === 3) { // En Proceso (Para probar HU-006 Cambio de Estado)
-        // Agregamos un botón para pasarlo a algún otro estado, por ej Aceptado para simular.
-        actionsDiv.innerHTML = `
-            <button class="btn btn-primary" onclick="cambiarEstado(1)">🔄 Marcar como Aceptado (HU-006)</button>
-        `;
     } else {
-        actionsDiv.innerHTML = `<p style="color:var(--text-secondary); font-size:0.9rem">No hay acciones disponibles para este estado.</p>`;
+        // Selector dinámico para HU-006 Cambio de Estado
+        actionsDiv.innerHTML = `
+            <div style="display:flex; gap:10px; align-items:center; width:100%">
+                <select id="select-nuevo-estado" class="btn" style="background: rgba(0,0,0,0.2); color:white; border: 1px solid var(--glass-border)">
+                    <option value="1" ${estadoActual === 1 ? 'selected' : ''}>Aceptado</option>
+                    <option value="3" ${estadoActual === 3 ? 'selected' : ''}>En Proceso</option>
+                    <option value="2" ${estadoActual === 2 ? 'selected' : ''}>Rechazado</option>
+                </select>
+                <button class="btn btn-primary" onclick="cambiarEstadoDesdeSelect()">🔄 Actualizar Estado</button>
+            </div>
+        `;
     }
 }
 
 async function responderAsignacion(aceptar) {
-    const payload = { aceptar: aceptar, motivo: "", conductorId: 105 }; // Datos simulados
+    const payload = { aceptar: aceptar, motivo: "", conductorId: 105 }; 
     try {
         const res = await fetch(`${API_BASE}/asignaciones/${currentServicioId}/responder`, {
             method: 'POST',
@@ -173,8 +212,13 @@ async function responderAsignacion(aceptar) {
     }
 }
 
+function cambiarEstadoDesdeSelect() {
+    const nuevoEstado = parseInt(document.getElementById('select-nuevo-estado').value);
+    cambiarEstado(nuevoEstado);
+}
+
 async function cambiarEstado(nuevoEstado) {
-    const payload = { estadoNuevo: nuevoEstado, observacion: "Actualizado desde panel" };
+    const payload = { estadoNuevo: nuevoEstado, observacion: "Actualizado desde panel interactivo" };
     try {
         const res = await fetch(`${API_BASE}/asignaciones/${currentServicioId}/estado`, {
             method: 'PATCH',
@@ -182,8 +226,11 @@ async function cambiarEstado(nuevoEstado) {
             body: JSON.stringify(payload)
         });
         
-        if(!res.ok) throw new Error('Fallo al actualizar estado');
-        showToast('Estado actualizado y guardado en historial (HU-006)');
+        if(!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Fallo al actualizar estado');
+        }
+        showToast('Estado actualizado correctamente (HU-006)');
         loadServicio();
     } catch (e) {
         showToast(e.message, true);
