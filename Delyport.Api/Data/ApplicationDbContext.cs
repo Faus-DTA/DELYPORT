@@ -37,7 +37,7 @@ public class ApplicationDbContext : DbContext
         // DATA DE PRUEBA: 10 Solicitudes, 10 Asignaciones y Múltiples Productos
         // Asignaciones
         var asignaciones = new AsignacionServicio[10];
-        string[] origenes = { "Puerto Callao", "Almacen Central", "Sede Lurin", "Oficina San Isidro" };
+        string origenFijo = "Almacén Central Santa Anita";
         string[] destinos = { "Santa Anita", "Comas", "El Agustino", "Los Olivos", "Miraflores" };
         int[] estadosAsignacion = { 0, 1, 3, 3, 0, 2, 3, 1, 0, 3 }; // 0:Pendiente, 1:Aceptado, 2:Rechazado, 3:EnProceso
         
@@ -45,7 +45,7 @@ public class ApplicationDbContext : DbContext
             asignaciones[i] = new AsignacionServicio {
                 Id = i+1, CodigoServicio = $"SRV-00{i+1}", ConductorId = 100 + i,
                 Descripcion = $"Ruta de entrega #{i+1}",
-                Origen = origenes[i%4], Destino = destinos[i%5],
+                Origen = origenFijo, Destino = destinos[i%5],
                 FechaAsignacion = DateTime.UtcNow, Tarifa = 150.0m + (i*10),
                 Estado = (Models.Enums.EstadoServicio)estadosAsignacion[i]
             };

@@ -109,7 +109,10 @@ async function loadSolicitudes() {
                     <td>${sol.distrito}<br><small>${sol.direccion}</small></td>
                     <td><small>${pStr}</small></td>
                     <td style="color:var(--success); font-weight:bold;">S/ ${sol.precioTotal.toFixed(2)}</td>
-                    <td><button class="btn btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(sol)})'>Editar</button></td>
+                    <td style="display:flex; gap:5px;">
+                        <button class="btn btn-sm btn-primary" onclick='openEditModal(${JSON.stringify(sol)})'>Editar</button>
+                        <button class="btn btn-sm btn-success" onclick='aprobarYAsignar(${sol.id})'>✅ Aprobar</button>
+                    </td>
                 </tr>
             `;
         });
@@ -195,6 +198,20 @@ async function crearSolicitud() {
     } catch (error) { showToast(error.message, true); }
 }
 
+async function aprobarYAsignar(id) {
+    if(!confirm("¿Convertir esta solicitud en un Servicio Asignado desde Santa Anita?")) return;
+    try {
+        const response = await fetch(`${API_BASE}/asignaciones/desde-solicitud/${id}`, { method: 'POST' });
+        if(!response.ok) {
+            const err = await response.json();
+            throw new Error(err.message || 'Error al asignar');
+        }
+        showToast('¡Solicitud Aprobada y Asignada con éxito!');
+        loadSolicitudes();
+        loadHistorial();
+    } catch (error) { showToast(error.message, true); }
+}
+
 /* ==============================================
    HU-005 & HU-006: HISTORIAL Y SERVICIOS
    ============================================== */
@@ -203,27 +220,29 @@ const badgesEnum = { 0: 'badge-pending', 1: 'badge-process', 2: 'badge-process',
 
 async function loadHistorial() {
     try {
-        // Aprovechamos los IDs inventados del 1 al 10 haciendo llamados (En un caso real se usa un GET GetAll)
+        const response = await fetch(`${API_BASE}/asignaciones`);
+        if(!response.ok) return;
+        const data = await response.json();
+
         const tbody = document.getElementById('historial-tbody');
         tbody.innerHTML = '';
-        for(let i=1; i<=10; i++) {
-            try {
-                let r = await fetch(`${API_BASE}/asignaciones/${i}`);
-                if(r.ok) {
-                    let s = await r.json();
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${s.id}</td>
-                            <td><strong>${s.codigoServicio}</strong></td>
-                            <td>${s.origen} ➡️ ${s.destino}</td>
-                            <td>C-${s.conductorId}</td>
-                            <td>S/${s.tarifa.toFixed(2)}</td>
-                            <td><span class="badge ${badgesEnum[s.estado]}">${estadosEnum[s.estado]}</span></td>
-                        </tr>
-                    `;
-                }
-            } catch(e) {}
+        if(data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center">No hay servicios registrados.</td></tr>';
+            return;
         }
+
+        data.forEach(s => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${s.id}</td>
+                    <td><strong>${s.codigoServicio}</strong></td>
+                    <td>${s.origen} ➡️ ${s.destino}</td>
+                    <td>C-${s.conductorId}</td>
+                    <td>S/${s.tarifa.toFixed(2)}</td>
+                    <td><span class="badge ${badgesEnum[s.estado]}">${estadosEnum[s.estado]}</span></td>
+                </tr>
+            `;
+        });
     } catch (error) {}
 }
 
