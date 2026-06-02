@@ -41,7 +41,7 @@
                     <li class="active" id="nav-inicio" onclick="switchTab('inicio', this)">🏠 Panel Principal</li>
                     <li id="nav-solicitudes" onclick="switchTab('solicitudes', this)">📝 Solicitudes (Cotizador)</li>
                     <li id="nav-servicios" onclick="switchTab('servicios', this)">🚚 Servicios Asignados</li>
-                    <li id="nav-historial" onclick="switchTab('historial', this)">📊 Historial de Carreras</li>
+                    <li id="nav-historial" onclick="switchTab('historial', this)">📊 Historial de Viajes</li>
                 </ul>
             </nav>
         </aside>
@@ -79,22 +79,22 @@
                             <button class="btn-outline">Ir a Asignación</button>
                         </div>
                         <div class="card glass-panel home-card" onclick="document.getElementById('nav-historial').click()">
-                            <h3>Todas las Carreras</h3>
+                            <h3>Todos los Viajes</h3>
                             <p>Visualiza el historial completo del sistema y el estado en vivo.</p>
-                            <button class="btn-outline">Ver Todas</button>
+                            <button class="btn-outline">Ver Todos</button>
                         </div>
                     </div>
                 </section>
 
-                <!-- Pestaña Historial de Carreras (Nueva) -->
+                <!-- Pestaña Historial de Viajes (Nueva) -->
                 <section id="tab-historial" class="tab-content">
                     <div class="section-header">
-                        <h1>Historial Global de Carreras</h1>
+                        <h1>Historial Global de Viajes</h1>
                         <p>Supervisa todos los servicios generados en el sistema.</p>
                     </div>
 
                     <div class="card glass-panel">
-                        <h3>Todos los Servicios (10 Ejemplos)</h3>
+                        <h3>Todos los Servicios</h3>
                         <div class="table-responsive">
                             <table class="modern-table">
                                 <thead>
@@ -102,9 +102,10 @@
                                         <th>ID</th>
                                         <th>Código</th>
                                         <th>Ruta (Origen - Destino)</th>
-                                        <th>Conductor (ID)</th>
+                                        <th>Conductor</th>
                                         <th>Tarifa</th>
                                         <th>Estado Actual</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody id="historial-tbody">

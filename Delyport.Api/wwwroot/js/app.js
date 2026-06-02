@@ -240,10 +240,17 @@ async function loadHistorial() {
                     <td>🧑‍✈️ ${s.conductorNombre}</td>
                     <td>S/${s.tarifa.toFixed(2)}</td>
                     <td><span class="badge ${badgesEnum[s.estado]}">${estadosEnum[s.estado]}</span></td>
+                    <td><button class="btn btn-sm btn-primary" onclick="irAGestionar(${s.id})">Gestionar</button></td>
                 </tr>
             `;
         });
     } catch (error) {}
+}
+
+function irAGestionar(id) {
+    document.getElementById('nav-servicios').click();
+    document.getElementById('buscar-srv-id').value = id;
+    buscarServicio();
 }
 
 function buscarServicio() {
