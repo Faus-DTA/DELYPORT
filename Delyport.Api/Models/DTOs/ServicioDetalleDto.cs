@@ -9,7 +9,7 @@ public class ServicioDetalleDto
     public string Descripcion { get; set; } = string.Empty;
     public string Origen { get; set; } = string.Empty;
     public string Destino { get; set; } = string.Empty;
-    public int ConductorId { get; set; }
+    public int? ConductorId { get; set; }
     public string ConductorNombre { get; set; } = string.Empty;
     public decimal Tarifa { get; set; }
     public int Estado { get; set; }

@@ -32,8 +32,10 @@ public class AsignacionServicio
 
     public DateTime FechaAsignacion { get; set; } = DateTime.UtcNow;
 
-    // Conductor asignado (podría ser nulo inicialmente)
     public int? ConductorId { get; set; }
+
+    [ForeignKey("ConductorId")]
+    public Conductor? Conductor { get; set; }
 
     // Propiedad de navegación hacia el historial
     public ICollection<HistorialEstado> HistorialEstados { get; set; } = new List<HistorialEstado>();
