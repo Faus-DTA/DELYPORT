@@ -29,9 +29,8 @@ public class Solicitud
     [MaxLength(100)]
     public string Distrito { get; set; } = string.Empty;
 
-    public TamanoProducto Tamano { get; set; } = TamanoProducto.Pequeno;
-
-    public int CantidadProductos { get; set; } = 1;
+    // Relacion 1:N
+    public ICollection<SolicitudProducto> Productos { get; set; } = new List<SolicitudProducto>();
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal PrecioTotal { get; set; }

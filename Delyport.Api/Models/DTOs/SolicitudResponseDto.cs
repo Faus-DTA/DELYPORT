@@ -10,8 +10,7 @@ public class SolicitudResponseDto
     public string DetalleCarga { get; set; } = string.Empty;
     public string Direccion { get; set; } = string.Empty;
     public string Distrito { get; set; } = string.Empty;
-    public string TamanoProducto { get; set; } = string.Empty;
-    public int CantidadProductos { get; set; }
+    public List<ProductoResponseDto> Productos { get; set; } = new List<ProductoResponseDto>();
     public decimal PrecioTotal { get; set; }
     public EstadoSolicitud Estado { get; set; }
     public DateTime FechaCreacion { get; set; }

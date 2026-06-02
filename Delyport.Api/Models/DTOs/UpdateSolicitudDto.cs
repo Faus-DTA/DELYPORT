@@ -20,9 +20,7 @@ public class UpdateSolicitudDto
     [MaxLength(100)]
     public string Distrito { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "El tamaño es obligatorio")]
-    public int Tamano { get; set; } 
-
-    [Range(1, 1000, ErrorMessage = "La cantidad debe ser al menos 1")]
-    public int CantidadProductos { get; set; }
+    [Required]
+    [MinLength(1, ErrorMessage = "Debe enviar al menos un producto en la cotización.")]
+    public List<ProductoDto> Productos { get; set; } = new List<ProductoDto>();
 }
