@@ -1,0 +1,15 @@
+using Delyport.Api.Models.Enums;
+
+namespace Delyport.Api.Models.DTOs;
+
+public class ServicioDetalleDto
+{
+    public int Id { get; set; }
+    public string CodigoServicio { get; set; } = string.Empty;
+    public string Descripcion { get; set; } = string.Empty;
+    public string Origen { get; set; } = string.Empty;
+    public string Destino { get; set; } = string.Empty;
+    public decimal Tarifa { get; set; }
+    public EstadoServicio Estado { get; set; }
+    public DateTime FechaAsignacion { get; set; }
+}
