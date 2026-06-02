@@ -28,4 +28,22 @@ public class AsignacionesController : ControllerBase
 
         return Ok(detalle);
     }
+
+    /// <summary>
+    /// Permite a un conductor aceptar o rechazar un servicio asignado (TASK-023, TASK-024, TASK-025)
+    /// </summary>
+    [HttpPost("{id}/responder")]
+    public async Task<IActionResult> ResponderAsignacion(int id, [FromBody] RespuestaAsignacionDto respuesta)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var resultado = await _asignacionService.ResponderAsignacionAsync(id, respuesta);
+
+        if (!resultado)
+            return NotFound(new { message = $"No se pudo procesar la respuesta. Verifica que el ID {id} exista y esté en estado Pendiente." });
+
+        var mensaje = respuesta.Aceptar ? "Servicio aceptado y actualizado a estado 'EnProceso'." : "Servicio rechazado.";
+        return Ok(new { message = mensaje });
+    }
 }

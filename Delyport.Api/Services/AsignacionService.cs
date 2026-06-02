@@ -35,4 +35,32 @@ public class AsignacionService : IAsignacionService
             FechaAsignacion = servicio.FechaAsignacion
         };
     }
+
+    public async Task<bool> ResponderAsignacionAsync(int id, RespuestaAsignacionDto respuesta)
+    {
+        var servicio = await _context.AsignacionesServicio.FindAsync(id);
+
+        if (servicio == null)
+            return false;
+            
+        if (servicio.Estado != Models.Enums.EstadoServicio.Pendiente)
+            return false;
+
+        // TASK-025: Actualizar estado del servicio a "En proceso" al ser aceptado
+        if (respuesta.Aceptar)
+        {
+            servicio.Estado = Models.Enums.EstadoServicio.EnProceso;
+            servicio.ConductorId = respuesta.ConductorId;
+        }
+        else
+        {
+            servicio.Estado = Models.Enums.EstadoServicio.Rechazado;
+            // Se podría guardar el motivo si la entidad AsignacionServicio tuviese el campo
+        }
+
+        _context.AsignacionesServicio.Update(servicio);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }
